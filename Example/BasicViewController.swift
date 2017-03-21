@@ -42,6 +42,7 @@ class BasicViewController: UITableViewController {
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         tableView.allowsSelection = false
         tableView.reorder.delegate = self
+        tableView.reorder.useReorderHandles = true
     }
 
 }
@@ -59,7 +60,8 @@ extension BasicViewController {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         cell.textLabel?.text = items[indexPath.row]
-        
+        cell.showsCustomReorderControl = true
+
         return cell
     }
     

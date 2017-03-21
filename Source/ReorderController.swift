@@ -127,6 +127,8 @@ public class ReorderController: NSObject {
     /// The spacer cell style.
     public var spacerCellStyle: ReorderSpacerCellStyle = .automatic
     
+    public var useReorderHandles = false
+    
     // MARK: - Internal state
     
     internal enum ReorderState {

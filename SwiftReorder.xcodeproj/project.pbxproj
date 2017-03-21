@@ -20,6 +20,8 @@
 		66FC50F91D5EE49D00CFCCCE /* RootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC50F01D5EE49D00CFCCCE /* RootViewController.swift */; };
 		66FC50FB1D5EE4CA00CFCCCE /* UITableView+Reorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC50FA1D5EE4CA00CFCCCE /* UITableView+Reorder.swift */; };
 		66FC50FD1D5EE4D600CFCCCE /* ReorderController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC50FC1D5EE4D600CFCCCE /* ReorderController.swift */; };
+		E82342391E7B233D008FA270 /* ReorderHandleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82342381E7B233D008FA270 /* ReorderHandleView.swift */; };
+		E823423B1E7B28DE008FA270 /* UITableViewCell+CustomReorderHandles.swift in Sources */ = {isa = PBXBuildFile; fileRef = E823423A1E7B28DE008FA270 /* UITableViewCell+CustomReorderHandles.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +40,8 @@
 		66FC50F01D5EE49D00CFCCCE /* RootViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RootViewController.swift; path = Example/RootViewController.swift; sourceTree = SOURCE_ROOT; };
 		66FC50FA1D5EE4CA00CFCCCE /* UITableView+Reorder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UITableView+Reorder.swift"; path = "Source/UITableView+Reorder.swift"; sourceTree = "<group>"; };
 		66FC50FC1D5EE4D600CFCCCE /* ReorderController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ReorderController.swift; path = Source/ReorderController.swift; sourceTree = "<group>"; };
+		E82342381E7B233D008FA270 /* ReorderHandleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ReorderHandleView.swift; path = Source/ReorderHandleView.swift; sourceTree = "<group>"; };
+		E823423A1E7B28DE008FA270 /* UITableViewCell+CustomReorderHandles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UITableViewCell+CustomReorderHandles.swift"; path = "Source/UITableViewCell+CustomReorderHandles.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +97,8 @@
 				66DF25111D8080A000C19289 /* ReorderController+DestinationRow.swift */,
 				66DF25101D8080A000C19289 /* ReorderController+AutoScroll.swift */,
 				66DF25121D8080A000C19289 /* ReorderController+GestureRecognizer.swift */,
+				E82342381E7B233D008FA270 /* ReorderHandleView.swift */,
+				E823423A1E7B28DE008FA270 /* UITableViewCell+CustomReorderHandles.swift */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -172,11 +178,13 @@
 				66DF25141D8080A000C19289 /* ReorderController+AutoScroll.swift in Sources */,
 				66FC50F81D5EE49D00CFCCCE /* NonMovableViewController.swift in Sources */,
 				66DF25151D8080A000C19289 /* ReorderController+DestinationRow.swift in Sources */,
+				E82342391E7B233D008FA270 /* ReorderHandleView.swift in Sources */,
 				66FC50F11D5EE49D00CFCCCE /* AppDelegate.swift in Sources */,
 				66FC50F71D5EE49D00CFCCCE /* LongListViewController.swift in Sources */,
 				66FC50FB1D5EE4CA00CFCCCE /* UITableView+Reorder.swift in Sources */,
 				66DF25171D8080A000C19289 /* ReorderController+SnapshotView.swift in Sources */,
 				66FC50F51D5EE49D00CFCCCE /* GroupedViewController.swift in Sources */,
+				E823423B1E7B28DE008FA270 /* UITableViewCell+CustomReorderHandles.swift in Sources */,
 				66FC50F21D5EE49D00CFCCCE /* BasicViewController.swift in Sources */,
 				66FC50F41D5EE49D00CFCCCE /* EffectsViewController.swift in Sources */,
 			);
@@ -279,6 +287,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				INFOPLIST_FILE = Example/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = adamshin.SwiftReorder;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -290,6 +299,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				INFOPLIST_FILE = Example/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = adamshin.SwiftReorder;
 				PRODUCT_NAME = "$(TARGET_NAME)";

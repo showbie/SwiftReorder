@@ -49,6 +49,15 @@ extension ReorderController: UIGestureRecognizerDelegate {
         let gestureLocation = gestureRecognizer.location(in: tableView)
         guard let indexPath = tableView.indexPathForRow(at: gestureLocation) else { return false }
         
+        if useReorderHandles {
+            if let view = tableView.hitTest(gestureLocation, with: nil), view is ReorderHandleView {
+                return delegate?.tableView(tableView, canReorderRowAt: indexPath) ?? true
+            }
+            else {
+                return false
+            }
+        }
+        
         return delegate?.tableView(tableView, canReorderRowAt: indexPath) ?? true
     }
     
