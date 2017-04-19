@@ -30,7 +30,7 @@ extension UITableViewCell {
                         handlesView.trailingAnchor.constraint(equalTo: trailingAnchor),
                         handlesView.topAnchor.constraint(equalTo: topAnchor),
                         handlesView.bottomAnchor.constraint(equalTo: bottomAnchor),
-                        contentView.trailingAnchor.constraint(equalTo: handlesView.leadingAnchor)
+//                        contentView.trailingAnchor.constraint(equalTo: handlesView.leadingAnchor)
                     ])
                 }
                 else {

@@ -25,18 +25,24 @@ import UIKit
 extension ReorderController {
     
     internal func createSnapshotViewForCell(at indexPath: IndexPath) {
-        removeSnapshotView()
-        self.tableView?.reloadData()
+        guard let tableView = tableView else { return }
         
-        guard let cell = tableView?.cellForRow(at: indexPath) else { return }
+        removeSnapshotView()
+        tableView.reloadData()
+        
+        guard let cell = tableView.cellForRow(at: indexPath) else { return }
+
+        cell.backgroundColor = .white
         
         UIGraphicsBeginImageContextWithOptions(cell.bounds.size, false, 0)
         cell.layer.render(in: UIGraphicsGetCurrentContext()!)
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         
+        let offsetY = delegate?.tableView(tableView, offsetYFor: indexPath) ?? 0
+        
         let snapshotView = UIImageView(image: image)
-        snapshotView.frame = cell.frame
+        snapshotView.frame = cell.frame.offsetBy(dx: 0, dy: offsetY)
         
         snapshotView.layer.masksToBounds = false
         snapshotView.layer.opacity = Float(cellOpacity)
@@ -47,7 +53,17 @@ extension ReorderController {
         snapshotView.layer.shadowRadius = shadowRadius
         snapshotView.layer.shadowOffset = shadowOffset
         
-        tableView?.addSubview(snapshotView)
+        let topBorder = CALayer()
+        topBorder.frame = CGRect(x: 0, y: 0, width: snapshotView.frame.width, height: 1 / UIScreen.main.scale)
+        topBorder.backgroundColor = UIColor.black.cgColor
+        snapshotView.layer.addSublayer(topBorder)
+
+        let bottomBorder = CALayer()
+        bottomBorder.frame = CGRect(x: 0, y: snapshotView.bounds.maxY, width: snapshotView.frame.width, height: 1 / UIScreen.main.scale)
+        bottomBorder.backgroundColor = UIColor.black.cgColor
+        snapshotView.layer.addSublayer(bottomBorder)
+
+        tableView.addSubview(snapshotView)
         self.snapshotView = snapshotView
     }
     

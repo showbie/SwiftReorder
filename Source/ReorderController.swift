@@ -69,6 +69,7 @@ public protocol TableViewReorderDelegate: class {
      */
     func tableViewDidFinishReordering(_ tableView: UITableView)
     
+    func tableView(_ tableView: UITableView, offsetYFor sourceIndexPath: IndexPath) -> CGFloat
 }
 
 public extension TableViewReorderDelegate {
@@ -82,7 +83,10 @@ public extension TableViewReorderDelegate {
     
     func tableViewDidFinishReordering(_ tableView: UITableView) {
     }
-    
+
+    func tableView(_ tableView: UITableView, offsetYFor sourceIndexPath: IndexPath) -> CGFloat {
+        return 0
+    }
 }
 
 // MARK: - ReorderController
@@ -127,12 +131,17 @@ public class ReorderController: NSObject {
     /// The spacer cell style.
     public var spacerCellStyle: ReorderSpacerCellStyle = .automatic
     
+    /// True, if the table view will use custom reorder handles to trigger the reorder operation. False, if the default long press gesture should be used.
     public var useReorderHandles = false
+    
+    /// The snapshot view will be offset by this amount vertically when initially displayed.
+    public var snapshotViewOffsetY: CGFloat = 0
     
     // MARK: - Internal state
     
     internal enum ReorderState {
         case ready(snapshotRow: IndexPath?)
+        case preparing(sourceRow: IndexPath)
         case reordering(sourceRow: IndexPath, destinationRow: IndexPath, snapshotOffset: CGFloat)
     }
     
@@ -170,6 +179,8 @@ public class ReorderController: NSObject {
         
         guard delegate?.tableView(tableView, canReorderRowAt: sourceRow) != false else { return }
         
+        reorderState = .preparing(sourceRow: sourceRow)
+
         createSnapshotViewForCell(at: sourceRow)
         animateSnapshotViewIn()
         activateAutoScrollDisplayLink()

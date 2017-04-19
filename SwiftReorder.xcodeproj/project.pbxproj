@@ -22,6 +22,8 @@
 		66FC50FD1D5EE4D600CFCCCE /* ReorderController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC50FC1D5EE4D600CFCCCE /* ReorderController.swift */; };
 		E82342391E7B233D008FA270 /* ReorderHandleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82342381E7B233D008FA270 /* ReorderHandleView.swift */; };
 		E823423B1E7B28DE008FA270 /* UITableViewCell+CustomReorderHandles.swift in Sources */ = {isa = PBXBuildFile; fileRef = E823423A1E7B28DE008FA270 /* UITableViewCell+CustomReorderHandles.swift */; };
+		E879CB141EA672C800832428 /* BasicReorderHandleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E879CB131EA672C800832428 /* BasicReorderHandleViewController.swift */; };
+		E879CB161EA6B34400832428 /* CustomTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E879CB151EA6B34400832428 /* CustomTableViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,6 +44,8 @@
 		66FC50FC1D5EE4D600CFCCCE /* ReorderController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ReorderController.swift; path = Source/ReorderController.swift; sourceTree = "<group>"; };
 		E82342381E7B233D008FA270 /* ReorderHandleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ReorderHandleView.swift; path = Source/ReorderHandleView.swift; sourceTree = "<group>"; };
 		E823423A1E7B28DE008FA270 /* UITableViewCell+CustomReorderHandles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UITableViewCell+CustomReorderHandles.swift"; path = "Source/UITableViewCell+CustomReorderHandles.swift"; sourceTree = "<group>"; };
+		E879CB131EA672C800832428 /* BasicReorderHandleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BasicReorderHandleViewController.swift; path = Example/BasicReorderHandleViewController.swift; sourceTree = SOURCE_ROOT; };
+		E879CB151EA6B34400832428 /* CustomTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CustomTableViewCell.swift; path = Example/CustomTableViewCell.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,11 +82,13 @@
 				66FC50E81D5EE49D00CFCCCE /* AppDelegate.swift */,
 				66FC50F01D5EE49D00CFCCCE /* RootViewController.swift */,
 				66FC50E91D5EE49D00CFCCCE /* BasicViewController.swift */,
+				E879CB131EA672C800832428 /* BasicReorderHandleViewController.swift */,
 				66FC50EC1D5EE49D00CFCCCE /* GroupedViewController.swift */,
 				66FC50EB1D5EE49D00CFCCCE /* EffectsViewController.swift */,
 				66FC50EE1D5EE49D00CFCCCE /* LongListViewController.swift */,
 				66FC50EF1D5EE49D00CFCCCE /* NonMovableViewController.swift */,
 				66FC50ED1D5EE49D00CFCCCE /* Info.plist */,
+				E879CB151EA6B34400832428 /* CustomTableViewCell.swift */,
 			);
 			name = Example;
 			path = SwiftReorder;
@@ -135,6 +141,7 @@
 				TargetAttributes = {
 					660256921CE6A5170029CB5F = {
 						CreatedOnToolsVersion = 7.3;
+						DevelopmentTeam = 79VEJB65B3;
 						LastSwiftMigration = 0800;
 					};
 				};
@@ -173,6 +180,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				66FC50F91D5EE49D00CFCCCE /* RootViewController.swift in Sources */,
+				E879CB141EA672C800832428 /* BasicReorderHandleViewController.swift in Sources */,
 				66DF25161D8080A000C19289 /* ReorderController+GestureRecognizer.swift in Sources */,
 				66FC50FD1D5EE4D600CFCCCE /* ReorderController.swift in Sources */,
 				66DF25141D8080A000C19289 /* ReorderController+AutoScroll.swift in Sources */,
@@ -180,6 +188,7 @@
 				66DF25151D8080A000C19289 /* ReorderController+DestinationRow.swift in Sources */,
 				E82342391E7B233D008FA270 /* ReorderHandleView.swift in Sources */,
 				66FC50F11D5EE49D00CFCCCE /* AppDelegate.swift in Sources */,
+				E879CB161EA6B34400832428 /* CustomTableViewCell.swift in Sources */,
 				66FC50F71D5EE49D00CFCCCE /* LongListViewController.swift in Sources */,
 				66FC50FB1D5EE4CA00CFCCCE /* UITableView+Reorder.swift in Sources */,
 				66DF25171D8080A000C19289 /* ReorderController+SnapshotView.swift in Sources */,
@@ -286,6 +295,7 @@
 		660256A61CE6A5170029CB5F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEVELOPMENT_TEAM = 79VEJB65B3;
 				INFOPLIST_FILE = Example/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -298,6 +308,7 @@
 		660256A71CE6A5170029CB5F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEVELOPMENT_TEAM = 79VEJB65B3;
 				INFOPLIST_FILE = Example/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

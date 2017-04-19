@@ -26,6 +26,7 @@ class RootViewController: UITableViewController {
     
     enum Row: Int {
         case basic = 0
+        case reorderHandles
         case grouped
         case longList
         case nonMovable
@@ -64,6 +65,8 @@ extension RootViewController {
         switch Row(rawValue: indexPath.row) ?? .count {
         case .basic:
             cell.textLabel?.text = "Basic"
+        case .reorderHandles:
+            cell.textLabel?.text = "Reorder Handles"
         case .grouped:
             cell.textLabel?.text = "Grouped"
         case .longList:
@@ -84,6 +87,8 @@ extension RootViewController {
         switch Row(rawValue: indexPath.row) ?? .count {
         case .basic:
             navigationController?.pushViewController(BasicViewController(), animated: true)
+        case .reorderHandles:
+            navigationController?.pushViewController(BasicReorderHandleViewController(), animated: true)
         case .grouped:
             navigationController?.pushViewController(GroupedViewController(), animated: true)
         case .longList:
