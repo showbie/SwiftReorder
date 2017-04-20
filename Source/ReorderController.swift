@@ -69,7 +69,7 @@ public protocol TableViewReorderDelegate: class {
      */
     func tableViewDidFinishReordering(_ tableView: UITableView)
     
-    func tableView(_ tableView: UITableView, offsetYFor sourceIndexPath: IndexPath) -> CGFloat
+    func tableView(_ tableView: UITableView, snapshotOffsetYFor snapshotIndexPath: IndexPath) -> CGFloat
 }
 
 public extension TableViewReorderDelegate {
@@ -77,14 +77,14 @@ public extension TableViewReorderDelegate {
     func tableView(_ tableView: UITableView, canReorderRowAt indexPath: IndexPath) -> Bool {
         return true
     }
-    
+
     func tableViewDidBeginReordering(_ tableView: UITableView) {
     }
     
     func tableViewDidFinishReordering(_ tableView: UITableView) {
     }
 
-    func tableView(_ tableView: UITableView, offsetYFor sourceIndexPath: IndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, snapshotOffsetYFor snapshotIndexPath: IndexPath) -> CGFloat {
         return 0
     }
 }
@@ -142,7 +142,13 @@ public class ReorderController: NSObject {
     internal enum ReorderState {
         case ready(snapshotRow: IndexPath?)
         case preparing(sourceRow: IndexPath)
-        case reordering(sourceRow: IndexPath, destinationRow: IndexPath, snapshotOffset: CGFloat)
+        case reordering(sourceRow: IndexPath, destinationRow: IndexPath, snapshotOffset: CGFloat, direction: ReorderDirection)
+    }
+    
+    internal enum ReorderDirection {
+        case up
+        case down
+        case stationary     // reorder has begun but a swipe to reorder hasn't begun yet
     }
     
     internal weak var tableView: UITableView?
@@ -191,14 +197,15 @@ public class ReorderController: NSObject {
         reorderState = .reordering(
             sourceRow: sourceRow,
             destinationRow: sourceRow,
-            snapshotOffset: snapshotOffset
+            snapshotOffset: snapshotOffset,
+            direction: .stationary
         )
 
         delegate?.tableViewDidBeginReordering(tableView)
     }
     
     internal func updateReorder(touchPoint: CGPoint) {
-        guard case let .reordering(_, _, snapshotOffset) = reorderState else { return }
+        guard case let .reordering(_, _, snapshotOffset, _) = reorderState else { return }
         guard let snapshotView = snapshotView else { return }
         
         snapshotView.center.y = touchPoint.y + snapshotOffset
@@ -206,7 +213,7 @@ public class ReorderController: NSObject {
     }
     
     internal func endReorder() {
-        guard case let .reordering(_, destinationRow, _) = reorderState else { return }
+        guard case let .reordering(_, destinationRow, _, _) = reorderState else { return }
         guard let tableView = tableView else { return }
         
         reorderState = .ready(snapshotRow: destinationRow)
@@ -258,7 +265,7 @@ public class ReorderController: NSObject {
      - Returns: An optional `UITableViewCell`.
      */
     public func spacerCell(for indexPath: IndexPath) -> UITableViewCell? {
-        if case let .reordering(_, destinationRow, _) = reorderState , indexPath == destinationRow {
+        if case let .reordering(_, destinationRow, _, _) = reorderState , indexPath == destinationRow {
             return spacerCell()
         } else if case let .ready(snapshotRow) = reorderState , indexPath == snapshotRow {
             return spacerCell()

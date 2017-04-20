@@ -39,7 +39,7 @@ extension ReorderController {
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         
-        let offsetY = delegate?.tableView(tableView, offsetYFor: indexPath) ?? 0
+        let offsetY = delegate?.tableView(tableView, snapshotOffsetYFor: indexPath) ?? 0
         
         let snapshotView = UIImageView(image: image)
         snapshotView.frame = cell.frame.offsetBy(dx: 0, dy: offsetY)

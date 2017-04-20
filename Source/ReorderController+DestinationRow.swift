@@ -33,7 +33,7 @@ extension CGRect {
 extension ReorderController {
     
     internal func updateDestinationRow() {
-        guard case let .reordering(sourceRow, destinationRow, snapshotOffset) = reorderState else { return }
+        guard case let .reordering(sourceRow, destinationRow, snapshotOffset, _) = reorderState else { return }
         guard let tableView = tableView else { return }
         
         guard let newDestinationRow = newDestinationRow() , newDestinationRow != destinationRow else { return }
@@ -41,8 +41,10 @@ extension ReorderController {
         reorderState = .reordering(
             sourceRow: sourceRow,
             destinationRow: newDestinationRow,
-            snapshotOffset: snapshotOffset
+            snapshotOffset: snapshotOffset,
+            direction: destinationRow.row < newDestinationRow.row ? .up : .down
         )
+        
         delegate?.tableView(tableView, reorderRowAt: destinationRow, to: newDestinationRow)
         
         tableView.beginUpdates()
@@ -52,7 +54,7 @@ extension ReorderController {
     }
     
     internal func newDestinationRow() -> IndexPath? {
-        guard case let .reordering(_, destinationRow, _) = reorderState else { return nil }
+        guard case let .reordering(_, destinationRow, _, _) = reorderState else { return nil }
         guard let tableView = tableView, let snapshotView = snapshotView else { return nil }
         
         let snapshotFrame = CGRect(center: snapshotView.center, size: snapshotView.bounds.size)
