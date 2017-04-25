@@ -42,7 +42,7 @@ extension ReorderController {
             sourceRow: sourceRow,
             destinationRow: newDestinationRow,
             snapshotOffset: snapshotOffset,
-            direction: destinationRow.row < newDestinationRow.row ? .up : .down
+            direction: destinationRow.row < newDestinationRow.row ? .down : .up
         )
         
         delegate?.tableView(tableView, reorderRowAt: destinationRow, to: newDestinationRow)

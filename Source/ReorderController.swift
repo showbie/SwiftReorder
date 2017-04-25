@@ -56,7 +56,9 @@ public protocol TableViewReorderDelegate: class {
      - Parameter indexPath: The index path of a row.
      */
     func tableView(_ tableView: UITableView, canReorderRowAt indexPath: IndexPath) -> Bool
-    
+
+    func tableViewWillBeginReordering(_ tableView: UITableView)
+
     /**
      Tells the delegate that the user has begun reordering a row.
      - Parameter tableView: The table view providing this information.
@@ -78,6 +80,9 @@ public extension TableViewReorderDelegate {
         return true
     }
 
+    func tableViewWillBeginReordering(_ tableView: UITableView) {
+    }
+    
     func tableViewDidBeginReordering(_ tableView: UITableView) {
     }
     
@@ -187,6 +192,8 @@ public class ReorderController: NSObject {
         
         reorderState = .preparing(sourceRow: sourceRow)
 
+        delegate?.tableViewWillBeginReordering(tableView)
+        
         createSnapshotViewForCell(at: sourceRow)
         animateSnapshotViewIn()
         activateAutoScrollDisplayLink()

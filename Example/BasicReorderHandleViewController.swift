@@ -22,7 +22,8 @@
 
 import UIKit
 
-class BasicReorderHandleViewController: UITableViewController {
+class BasicReorderHandleViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+    var tableView: UITableView!
     
     var items = ["File 1",
                  "File 2",
@@ -33,7 +34,12 @@ class BasicReorderHandleViewController: UITableViewController {
                  "Comment 4",
                  "File 4",
                  "File 5",
-                 "Comment 5"]
+                 "Comment 5",
+                 "File 6",
+                 "Comment 6",
+                 "File 7",
+                 "File 8",
+                 "Comment 7"]
     var reorderItems: [String]?
     
     required init?(coder aDecoder: NSCoder) {
@@ -41,7 +47,7 @@ class BasicReorderHandleViewController: UITableViewController {
     }
     
     init() {
-        super.init(style: .plain)
+        super.init(nibName: nil, bundle: nil)
     }
     
     override func viewDidLoad() {
@@ -49,10 +55,20 @@ class BasicReorderHandleViewController: UITableViewController {
         
         title = "Basic"
 
+        let frame = self.view.frame.insetBy(dx: 0, dy: -50)
+//        frame.size.height += 100
+        
+        tableView = UITableView(frame: frame, style: .plain)
         tableView.separatorStyle = .none
         tableView.register(CustomTableViewCell.self, forCellReuseIdentifier: "cell")
         tableView.allowsSelection = false
         tableView.reorder.delegate = self
+        tableView.reorder.cellOpacity = 0.5
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.contentInset.top = 50
+        tableView.contentInset.bottom = 50
+        view.addSubview(tableView)
 //        tableView.reorder.useReorderHandles = true
     }
     
@@ -60,12 +76,13 @@ class BasicReorderHandleViewController: UITableViewController {
 
 extension BasicReorderHandleViewController {
     
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return items.count
     }
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let spacer = tableView.reorder.spacerCell(for: indexPath) {
+            spacer.tag = 1000
             return spacer
         }
         
@@ -79,7 +96,7 @@ extension BasicReorderHandleViewController {
         let itemsToUse: [String]! = items// reordering ? reorderItems : items
 
         let text = items[indexPath.row]
-        cell.label.text = text
+        cell.labelText = text
 //        cell.showsCustomReorderControl = true
         cell.label.backgroundColor = .clear
 
@@ -119,7 +136,7 @@ extension BasicReorderHandleViewController {
         return cell
     }
     
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         var height: CGFloat = 60
         
         let itemsToUse: [String]! = items// reordering ? reorderItems : items
@@ -150,36 +167,73 @@ extension BasicReorderHandleViewController {
         }
         
         switch tableView.reorder.reorderState {
-        case let .reordering(sourceRow, destinationRow, _, direction) where direction != .stationary:
-            if destinationRow == indexPath && sourceRow != destinationRow {
+        case let .reordering(_, destinationIndexPath, _, direction) where direction != .stationary && destinationIndexPath == indexPath:
+            // check to ensure we're updating the spacer row
+//            if destinationRow == indexPath && sourceRow != destinationRow {
                 // diff heights here to update the spacer cell height
-                let oldHeight = reorderHeight
-                var newHeight: CGFloat = 0
+//                let oldHeight = reorderHeight
+//                var newHeight: CGFloat = 0
+            
+                postReorderAffectedCellHeights = 0
                 
                 if direction == .down {
-                    if destinationRow.row - 1 > 0 {
-                        if let height = tableView.delegate?.tableView!(tableView, heightForRowAt: IndexPath(row: destinationRow.row - 1, section: 0)) {
-                            newHeight += height
+                    if destinationIndexPath.row - 2 >= 0 {
+                        if let height = tableView.delegate?.tableView!(tableView, heightForRowAt: IndexPath(row: destinationIndexPath.row - 2, section: 0)) {
+                            postReorderAffectedCellHeights += height
+                        }
+                    }
+
+                    if destinationIndexPath.row - 1 >= 0 {
+                        if let height = tableView.delegate?.tableView!(tableView, heightForRowAt: IndexPath(row: destinationIndexPath.row - 1, section: 0)) {
+                            postReorderAffectedCellHeights += height
                         }
                     }
                     
-                    if destinationRow.row + 1 < items.count - 1 {
-                        if let height = tableView.delegate?.tableView!(tableView, heightForRowAt: IndexPath(row: destinationRow.row + 1, section: 0)) {
-                            newHeight += height
+                    if destinationIndexPath.row + 1 < items.count - 1 {
+                        if let height = tableView.delegate?.tableView!(tableView, heightForRowAt: IndexPath(row: destinationIndexPath.row + 1, section: 0)) {
+                            postReorderAffectedCellHeights += height
                         }
                     }
                 }
                 else {
+                    if destinationIndexPath.row + 2 <= items.count - 1 {
+                        if let height = tableView.delegate?.tableView!(tableView, heightForRowAt: IndexPath(row: destinationIndexPath.row + 2, section: 0)) {
+                            postReorderAffectedCellHeights += height
+                        }
+                    }
                     
+                    if destinationIndexPath.row + 1 <= items.count - 1 {
+                        if let height = tableView.delegate?.tableView!(tableView, heightForRowAt: IndexPath(row: destinationIndexPath.row + 1, section: 0)) {
+                            postReorderAffectedCellHeights += height
+                        }
+                    }
+                    
+                    if destinationIndexPath.row - 1 >= 0 {
+                        if let height = tableView.delegate?.tableView!(tableView, heightForRowAt: IndexPath(row: destinationIndexPath.row - 1, section: 0)) {
+                            postReorderAffectedCellHeights += height
+                        }
+                    }
                 }
 
-                height -= newHeight - oldHeight
+                height = previousSpacerHeight - (postReorderAffectedCellHeights - preReorderAffectedCellHeights)
+//                previousSpacerHeight = height
+            
                 
-                if height < 0 {
-                    print("oops")
-                }
+//                if calculatedDiff == 0 {
+//                    calculatedDiff = newHeight - oldHeight
+//                }
 
-            }
+//                let heightDiff = fabs(newHeight - oldHeight)
+//                
+//                if heightDiff == 0 {
+//                    height = spacerHeight
+//                }
+//                else {
+//                    height -= heightDiff //newHeight - oldHeight
+//                    spacerHeight = height
+//                }
+
+//            }
             break
     
         // ensure the height of a single line comment is the height of the base bubble (36) + 12 top + 12 bottom padding = 60
@@ -191,41 +245,87 @@ extension BasicReorderHandleViewController {
             break
         }
         
-        
-        if height < 0 {
-            print("oops")
-        }
         return height
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if case let .reordering(_, destinationIndexPath, _, direction) = tableView.reorder.reorderState, destinationIndexPath == indexPath {
+//            previousSpacerHeight = cell.frame.size.height
+//            if direction == .stationary {
+                previousSpacerHeight = cell.frame.size.height
+//            }
+            
+            cell.textLabel?.text = "                           \(cell.frame.size.height)"
+        }
     }
 }
 
+var preReorderAffectedCellHeights: CGFloat = 0
+var postReorderAffectedCellHeights: CGFloat = 0
+var previousSpacerHeight: CGFloat = 0
 var reorderHeight: CGFloat = 0
 
-extension BasicReorderHandleViewController: TableViewReorderDelegate {    
+extension BasicReorderHandleViewController: TableViewReorderDelegate {
+    func tableViewWillBeginReordering(_ tableView: UITableView) {
+        reorderItems = items
+    }
+    
     func tableViewDidBeginReordering(_ tableView: UITableView) {
     }
     
     func tableView(_ tableView: UITableView, reorderRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         // calculate the cell heights before doing any reordering has occurred
-        reorderHeight = 0
-        
         guard case let .reordering(_, _, _, direction) = tableView.reorder.reorderState, direction != .stationary else { return }
-        
+//
+        preReorderAffectedCellHeights = 0
+
         if direction == .down {
-            if destinationIndexPath.row + 1 < items.count - 1 {
-                if let height = tableView.delegate?.tableView!(tableView, heightForRowAt: IndexPath(row: destinationIndexPath.row + 1, section: 0)) {
-                    reorderHeight += height
+            if destinationIndexPath.row - 2 >= 0 {
+                if let cell = tableView.cellForRow(at: IndexPath(row: destinationIndexPath.row - 2, section: 0)) {
+                    preReorderAffectedCellHeights += cell.frame.height
                 }
             }
             
-            if destinationIndexPath.row + 2 < items.count - 1 {
-                if let height = tableView.delegate?.tableView!(tableView, heightForRowAt: IndexPath(row: destinationIndexPath.row + 2, section: 0)) {
-                    reorderHeight += height
+                if let cell = tableView.cellForRow(at: IndexPath(row: destinationIndexPath.row, section: 0)) {
+                    preReorderAffectedCellHeights += cell.frame.height
                 }
+//                if let height = tableView.delegate?.tableView!(tableView, heightForRowAt: IndexPath(row: destinationIndexPath.row + 1, section: 0)) {
+//                    reorderHeight += height
+//                }
+            
+            if destinationIndexPath.row + 1 <= items.count - 1 {
+                if let cell = tableView.cellForRow(at: IndexPath(row: destinationIndexPath.row + 1, section: 0)) {
+                    preReorderAffectedCellHeights += cell.frame.height
+                }
+//                if let height = tableView.delegate?.tableView!(tableView, heightForRowAt: IndexPath(row: destinationIndexPath.row + 2, section: 0)) {
+//                    reorderHeight += height
+//                }
             }
         }
         else {
+            if destinationIndexPath.row - 1 >= 0 {
+                if let cell = tableView.cellForRow(at: IndexPath(row: destinationIndexPath.row - 1, section: 0)) {
+                    preReorderAffectedCellHeights += cell.frame.height
+                }
+
+//                if let height = tableView.delegate?.tableView!(tableView, heightForRowAt: IndexPath(row: destinationIndexPath.row - 1, section: 0)) {
+//                    reorderHeight += height
+//                }
+            }
             
+            if let cell = tableView.cellForRow(at: IndexPath(row: destinationIndexPath.row, section: 0)) {
+                preReorderAffectedCellHeights += cell.frame.height
+            }
+
+            
+            if destinationIndexPath.row + 1 <= items.count - 1 {
+                if let cell = tableView.cellForRow(at: IndexPath(row: destinationIndexPath.row + 1, section: 0)) {
+                    preReorderAffectedCellHeights += cell.frame.height
+                }
+//                if let height = tableView.delegate?.tableView!(tableView, heightForRowAt: IndexPath(row: destinationIndexPath.row + 2, section: 0)) {
+//                    reorderHeight += height
+//                }
+            }
         }
 
         
@@ -283,14 +383,14 @@ extension BasicReorderHandleViewController: TableViewReorderDelegate {
     }
     
     func tableView(_ tableView: UITableView, snapshotOffsetYFor snapshotIndexPath: IndexPath) -> CGFloat {
-        let text = reorderItems![snapshotIndexPath.row]
+        let text = items[snapshotIndexPath.row]
         
         if text.hasPrefix("Comment") {
             var afterBubbleCell = false
             let snapshotPadding: CGFloat = 12
             
             if snapshotIndexPath.row > 0 {
-                afterBubbleCell = reorderItems![snapshotIndexPath.row - 1].hasPrefix("Comment")
+                afterBubbleCell = items[snapshotIndexPath.row - 1].hasPrefix("Comment")
             }
             
             let topOffset: CGFloat = afterBubbleCell ? 5 : 17

@@ -11,6 +11,11 @@ import UIKit
 class CustomTableViewCell: UITableViewCell {
     let bubbleView = UIView()
     let label = UILabel()
+    var labelText = "" {
+        didSet {
+            label.text = labelText
+        }
+    }
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -69,13 +74,14 @@ class CustomTableViewCell: UITableViewCell {
 
     }
     
-//    override func layoutSubviews() {
-//        super.layoutSubviews()
-//        
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        label.text = "\(labelText)                        \(frame.size.height)"
 //        label.sizeToFit()
 //        label.center.y = showBubble ? bubbleView.center.y : contentView.center.y
 //        label.frame.origin.x = 100
-//    }
+    }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
