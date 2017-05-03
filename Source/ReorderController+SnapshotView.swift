@@ -32,7 +32,7 @@ extension ReorderController {
         
         guard let cell = tableView.cellForRow(at: indexPath) else { return }
 
-        cell.backgroundColor = .white
+        delegate?.prepareCellForSnapshot(cell: cell)
         
         UIGraphicsBeginImageContextWithOptions(cell.bounds.size, false, 0)
         cell.layer.render(in: UIGraphicsGetCurrentContext()!)

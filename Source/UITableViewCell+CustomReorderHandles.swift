@@ -32,6 +32,8 @@ extension UITableViewCell {
                         handlesView.bottomAnchor.constraint(equalTo: bottomAnchor),
 //                        contentView.trailingAnchor.constraint(equalTo: handlesView.leadingAnchor)
                     ])
+                    
+                    reorderHandlesView = handlesView
                 }
                 else {
                     reorderHandlesView?.removeFromSuperview()
@@ -55,4 +57,13 @@ extension UITableViewCell {
         }
     }
 
+    public var reorderHandleImage: UIImage? {
+        set {
+            reorderHandlesView?.reorderHandleImage = newValue
+        }
+        
+        get {
+            return reorderHandlesView?.reorderHandleImage
+        }
+    }
 }

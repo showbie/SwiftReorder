@@ -57,6 +57,10 @@ public protocol TableViewReorderDelegate: class {
      */
     func tableView(_ tableView: UITableView, canReorderRowAt indexPath: IndexPath) -> Bool
 
+    /**
+     Tells the delegate that the user is aboue to begin reordering a row.
+     - Parameter tableView: The table view providing this information.
+     */
     func tableViewWillBeginReordering(_ tableView: UITableView)
 
     /**
@@ -72,6 +76,8 @@ public protocol TableViewReorderDelegate: class {
     func tableViewDidFinishReordering(_ tableView: UITableView)
     
     func tableView(_ tableView: UITableView, snapshotOffsetYFor snapshotIndexPath: IndexPath) -> CGFloat
+    
+    func prepareCellForSnapshot(cell: UITableViewCell)
 }
 
 public extension TableViewReorderDelegate {
@@ -91,6 +97,9 @@ public extension TableViewReorderDelegate {
 
     func tableView(_ tableView: UITableView, snapshotOffsetYFor snapshotIndexPath: IndexPath) -> CGFloat {
         return 0
+    }
+    
+    func prepareCellForSnapshot(cell: UITableViewCell) {
     }
 }
 
@@ -142,15 +151,22 @@ public class ReorderController: NSObject {
     /// The snapshot view will be offset by this amount vertically when initially displayed.
     public var snapshotViewOffsetY: CGFloat = 0
     
+    /// If true, reordering via long press or reorder handles is enabled. Set to false to disable reordering.
+    public var isReorderingEnabled = true {
+        didSet {
+            reorderGestureRecognizer.isEnabled = isReorderingEnabled
+        }
+    }
+    
     // MARK: - Internal state
     
-    internal enum ReorderState {
+    public enum ReorderState {
         case ready(snapshotRow: IndexPath?)
         case preparing(sourceRow: IndexPath)
         case reordering(sourceRow: IndexPath, destinationRow: IndexPath, snapshotOffset: CGFloat, direction: ReorderDirection)
     }
     
-    internal enum ReorderDirection {
+    public enum ReorderDirection {
         case up
         case down
         case stationary     // reorder has begun but a swipe to reorder hasn't begun yet
@@ -158,7 +174,7 @@ public class ReorderController: NSObject {
     
     internal weak var tableView: UITableView?
     
-    internal var reorderState: ReorderState = .ready(snapshotRow: nil)
+    public var reorderState: ReorderState = .ready(snapshotRow: nil)
     internal var snapshotView: UIView? = nil
     
     internal var autoScrollDisplayLink: CADisplayLink?
