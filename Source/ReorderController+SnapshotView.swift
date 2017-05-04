@@ -23,6 +23,7 @@
 import UIKit
 
 extension ReorderController {
+    internal class ReorderSnapshotView: UIView {}   // for debugging purposes
     
     internal func createSnapshotViewForCell(at indexPath: IndexPath) {
         guard let tableView = tableView else { return }
@@ -32,7 +33,7 @@ extension ReorderController {
         
         guard let cell = tableView.cellForRow(at: indexPath) else { return }
 
-        delegate?.prepareCellForSnapshot(cell: cell)
+        delegate?.tableView(tableView, prepareForSnapshot: cell)
         
         UIGraphicsBeginImageContextWithOptions(cell.bounds.size, false, 0)
         cell.layer.render(in: UIGraphicsGetCurrentContext()!)
@@ -41,7 +42,10 @@ extension ReorderController {
         
         let offsetY = delegate?.tableView(tableView, snapshotOffsetYFor: indexPath) ?? 0
         
-        let snapshotView = UIImageView(image: image)
+        let snapshotView = ReorderSnapshotView()
+        let snapshotImageView = UIImageView(image: image)
+        
+        snapshotView.addSubview(snapshotImageView)
         snapshotView.frame = cell.frame.offsetBy(dx: 0, dy: offsetY)
         
         snapshotView.layer.masksToBounds = false
@@ -53,16 +57,8 @@ extension ReorderController {
         snapshotView.layer.shadowRadius = shadowRadius
         snapshotView.layer.shadowOffset = shadowOffset
         
-        let topBorder = CALayer()
-        topBorder.frame = CGRect(x: 0, y: 0, width: snapshotView.frame.width, height: 1 / UIScreen.main.scale)
-        topBorder.backgroundColor = UIColor.black.cgColor
-        snapshotView.layer.addSublayer(topBorder)
-
-        let bottomBorder = CALayer()
-        bottomBorder.frame = CGRect(x: 0, y: snapshotView.bounds.maxY, width: snapshotView.frame.width, height: 1 / UIScreen.main.scale)
-        bottomBorder.backgroundColor = UIColor.black.cgColor
-        snapshotView.layer.addSublayer(bottomBorder)
-
+        delegate?.tableView(tableView, willDisplay: snapshotView)
+        
         tableView.addSubview(snapshotView)
         self.snapshotView = snapshotView
     }

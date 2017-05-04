@@ -77,7 +77,12 @@ public protocol TableViewReorderDelegate: class {
     
     func tableView(_ tableView: UITableView, snapshotOffsetYFor snapshotIndexPath: IndexPath) -> CGFloat
     
-    func prepareCellForSnapshot(cell: UITableViewCell)
+    func tableView(_ tableView: UITableView, prepareForSnapshot cell: UITableViewCell)
+    
+    /// Tells the delegate that the snapshot view is about to be displayed, allowing any last minute customizations before it's displayed.
+    ///
+    /// - Parameter view: The cell snapshot view.
+    func tableView(_ tableView: UITableView, willDisplay snapshotView: UIView)
 }
 
 public extension TableViewReorderDelegate {
@@ -99,7 +104,10 @@ public extension TableViewReorderDelegate {
         return 0
     }
     
-    func prepareCellForSnapshot(cell: UITableViewCell) {
+    func tableView(_ tableView: UITableView, prepareForSnapshot cell: UITableViewCell) {
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay snapshotView: UIView) {
     }
 }
 
