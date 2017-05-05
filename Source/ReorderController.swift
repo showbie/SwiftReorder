@@ -68,7 +68,13 @@ public protocol TableViewReorderDelegate: class {
      - Parameter tableView: The table view providing this information.
      */
     func tableViewDidBeginReordering(_ tableView: UITableView)
-    
+
+    /**
+     Tells the delegate that the user is about to finish reordering.
+     - Parameter tableView: The table view providing this information.
+     */
+    func tableViewWillFinishReordering(_ tableView: UITableView)
+
     /**
      Tells the delegate that the user has finished reordering.
      - Parameter tableView: The table view providing this information.
@@ -95,6 +101,9 @@ public extension TableViewReorderDelegate {
     }
     
     func tableViewDidBeginReordering(_ tableView: UITableView) {
+    }
+    
+    func tableViewWillFinishReordering(_ tableView: UITableView) {
     }
     
     func tableViewDidFinishReordering(_ tableView: UITableView) {
@@ -257,6 +266,8 @@ public class ReorderController: NSObject {
         if snapshotView?.center == rectCenter {
             snapshotView?.center.y += 0.1
         }
+        
+        delegate?.tableViewWillFinishReordering(tableView)
         
         UIView.animate(withDuration: animationDuration, animations: {
             self.snapshotView?.center = CGPoint(x: rect.midX, y: rect.midY)
