@@ -61,7 +61,8 @@ extension BasicViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         cell.textLabel?.text = items[indexPath.row]
         cell.showsCustomReorderControl = true
-
+        cell.reorderHandleImage = UIImage(named: "reorder-handle")
+        
         return cell
     }
     

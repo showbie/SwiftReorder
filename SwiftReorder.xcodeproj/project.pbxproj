@@ -22,6 +22,7 @@
 		66FC50FD1D5EE4D600CFCCCE /* ReorderController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FC50FC1D5EE4D600CFCCCE /* ReorderController.swift */; };
 		E82342391E7B233D008FA270 /* ReorderHandleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E82342381E7B233D008FA270 /* ReorderHandleView.swift */; };
 		E823423B1E7B28DE008FA270 /* UITableViewCell+CustomReorderHandles.swift in Sources */ = {isa = PBXBuildFile; fileRef = E823423A1E7B28DE008FA270 /* UITableViewCell+CustomReorderHandles.swift */; };
+		E854D7781EB8E29A00ABF0F1 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E854D7771EB8E29A00ABF0F1 /* Media.xcassets */; };
 		E879CB141EA672C800832428 /* BasicReorderHandleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E879CB131EA672C800832428 /* BasicReorderHandleViewController.swift */; };
 		E879CB161EA6B34400832428 /* CustomTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E879CB151EA6B34400832428 /* CustomTableViewCell.swift */; };
 /* End PBXBuildFile section */
@@ -44,6 +45,7 @@
 		66FC50FC1D5EE4D600CFCCCE /* ReorderController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ReorderController.swift; path = Source/ReorderController.swift; sourceTree = "<group>"; };
 		E82342381E7B233D008FA270 /* ReorderHandleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ReorderHandleView.swift; path = Source/ReorderHandleView.swift; sourceTree = "<group>"; };
 		E823423A1E7B28DE008FA270 /* UITableViewCell+CustomReorderHandles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UITableViewCell+CustomReorderHandles.swift"; path = "Source/UITableViewCell+CustomReorderHandles.swift"; sourceTree = "<group>"; };
+		E854D7771EB8E29A00ABF0F1 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Media.xcassets; path = Example/Media.xcassets; sourceTree = SOURCE_ROOT; };
 		E879CB131EA672C800832428 /* BasicReorderHandleViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = BasicReorderHandleViewController.swift; path = Example/BasicReorderHandleViewController.swift; sourceTree = SOURCE_ROOT; };
 		E879CB151EA6B34400832428 /* CustomTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CustomTableViewCell.swift; path = Example/CustomTableViewCell.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -89,6 +91,7 @@
 				66FC50EF1D5EE49D00CFCCCE /* NonMovableViewController.swift */,
 				66FC50ED1D5EE49D00CFCCCE /* Info.plist */,
 				E879CB151EA6B34400832428 /* CustomTableViewCell.swift */,
+				E854D7771EB8E29A00ABF0F1 /* Media.xcassets */,
 			);
 			name = Example;
 			path = SwiftReorder;
@@ -170,6 +173,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E854D7781EB8E29A00ABF0F1 /* Media.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

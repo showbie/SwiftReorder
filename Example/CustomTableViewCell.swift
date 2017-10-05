@@ -77,6 +77,7 @@ class CustomTableViewCell: UITableViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
 
+        print("laying out: \(labelText)")
         label.text = "\(labelText)                        \(frame.size.height)"
 //        label.sizeToFit()
 //        label.center.y = showBubble ? bubbleView.center.y : contentView.center.y

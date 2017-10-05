@@ -47,10 +47,17 @@ extension ReorderController {
         
         delegate?.tableView(tableView, reorderRowAt: destinationRow, to: newDestinationRow)
         
+        CATransaction.begin()
+        CATransaction.setCompletionBlock {
+            self.delegate?.tableView(tableView, didReorderRowAt: destinationRow, to: newDestinationRow)
+        }
+        
         tableView.beginUpdates()
         tableView.deleteRows(at: [destinationRow], with: .fade)
         tableView.insertRows(at: [newDestinationRow], with: .fade)
         tableView.endUpdates()
+    
+        CATransaction.commit()
     }
     
     internal func newDestinationRow() -> IndexPath? {
