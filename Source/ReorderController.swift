@@ -35,6 +35,12 @@ public enum ReorderSpacerCellStyle {
     case transparent
 }
 
+@objc
+public extension ReorderController {
+    public static let DidBeginReorderingNotification = NSNotification.Name("ReorderControllerDidBeginReordering")
+    public static let DidFinishReorderingNotification = NSNotification.Name("ReorderControllerDidFinishReordering")
+}
+
 // MARK: - TableViewReorderDelegate
 
 /**
@@ -252,6 +258,7 @@ public class ReorderController: NSObject {
             direction: .stationary
         )
 
+        NotificationCenter.default.post(name: ReorderController.DidBeginReorderingNotification, object: tableView)
         delegate?.tableViewDidBeginReordering(tableView)
     }
     
@@ -296,6 +303,7 @@ public class ReorderController: NSObject {
         animateSnapshotViewOut()
         clearAutoScrollDisplayLink()
         
+        NotificationCenter.default.post(name: ReorderController.DidFinishReorderingNotification, object: tableView)
         delegate?.tableViewDidFinishReordering(tableView)
     }
     

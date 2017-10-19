@@ -52,10 +52,11 @@ extension ReorderController {
             self.delegate?.tableView(tableView, didReorderRowAt: destinationRow, to: newDestinationRow)
         }
         
-        tableView.beginUpdates()
-        tableView.deleteRows(at: [destinationRow], with: .fade)
-        tableView.insertRows(at: [newDestinationRow], with: .fade)
-        tableView.endUpdates()
+        tableView.moveRow(at: destinationRow, to: newDestinationRow)
+//        tableView.beginUpdates()
+//        tableView.deleteRows(at: [destinationRow], with: .fade)
+//        tableView.insertRows(at: [newDestinationRow], with: .fade)
+//        tableView.endUpdates()
     
         CATransaction.commit()
     }

@@ -8,6 +8,7 @@
 
 import UIKit
 
+@objc
 extension UITableViewCell {
     private struct AssociatedKeys {
         static var showsCustomReorderControl: UInt8 = 0
@@ -47,7 +48,7 @@ extension UITableViewCell {
         }
     }
     
-    private var reorderHandlesView: ReorderHandleView? {
+    public private(set) var reorderHandlesView: ReorderHandleView? {
         set {
             objc_setAssociatedObject(self, &AssociatedKeys.handlesView, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
