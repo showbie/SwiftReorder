@@ -32,10 +32,16 @@ private func mapValue(_ value: CGFloat, inRangeWithMin minA: CGFloat, max maxA: 
 
 extension ReorderController {
     
-    internal func autoScrollVelocity() -> CGFloat {
+    func autoScrollVelocity() -> CGFloat {
         guard let tableView = tableView, let snapshotView = snapshotView else { return 0 }
         
-        let scrollBounds = UIEdgeInsetsInsetRect(tableView.bounds, tableView.contentInset)
+        var actualContentInset = tableView.contentInset
+        if #available(iOS 11, *) {
+            actualContentInset.top += tableView.safeAreaInsets.top
+            actualContentInset.bottom += tableView.safeAreaInsets.bottom
+        }
+        
+        let scrollBounds = UIEdgeInsetsInsetRect(tableView.bounds, actualContentInset)
         let distanceToTop = max(snapshotView.frame.minY - scrollBounds.minY, 0)
         let distanceToBottom = max(scrollBounds.maxY - snapshotView.frame.maxY, 0)
         
@@ -47,20 +53,20 @@ extension ReorderController {
         }
         return 0
     }
-
-    internal func activateAutoScrollDisplayLink() {
+    
+    func activateAutoScrollDisplayLink() {
         autoScrollDisplayLink = CADisplayLink(target: self, selector: #selector(handleDisplayLinkUpdate))
         autoScrollDisplayLink?.add(to: RunLoop.main, forMode: RunLoopMode.defaultRunLoopMode)
         lastAutoScrollTimeStamp = nil
     }
-
-    internal func clearAutoScrollDisplayLink() {
+    
+    func clearAutoScrollDisplayLink() {
         autoScrollDisplayLink?.invalidate()
         autoScrollDisplayLink = nil
         lastAutoScrollTimeStamp = nil
     }
-
-    @objc internal func handleDisplayLinkUpdate(_ displayLink: CADisplayLink) {
+    
+    @objc func handleDisplayLinkUpdate(_ displayLink: CADisplayLink) {
         guard let tableView = tableView, let snapshotView = snapshotView else { return }
         
         if let lastAutoScrollTimeStamp = lastAutoScrollTimeStamp {
@@ -73,8 +79,14 @@ extension ReorderController {
                 let oldOffset = tableView.contentOffset
                 tableView.setContentOffset(CGPoint(x: oldOffset.x, y: oldOffset.y + CGFloat(scrollDelta)), animated: false)
                 
-                tableView.contentOffset.y = min(tableView.contentOffset.y, tableView.contentSize.height + tableView.contentInset.bottom - tableView.frame.height)
-                tableView.contentOffset.y = max(tableView.contentOffset.y, -tableView.contentInset.top)
+                var actualContentInset = tableView.contentInset
+                if #available(iOS 11, *) {
+                    actualContentInset.top += tableView.safeAreaInsets.top
+                    actualContentInset.bottom += tableView.safeAreaInsets.bottom
+                }
+                
+                tableView.contentOffset.y = min(tableView.contentOffset.y, tableView.contentSize.height + actualContentInset.bottom - tableView.frame.height)
+                tableView.contentOffset.y = max(tableView.contentOffset.y, -actualContentInset.top)
                 
                 let actualScrollDistance = tableView.contentOffset.y - oldOffset.y
                 snapshotView.frame.origin.y += actualScrollDistance
@@ -86,3 +98,4 @@ extension ReorderController {
     }
     
 }
+
