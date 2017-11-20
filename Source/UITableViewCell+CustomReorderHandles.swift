@@ -16,7 +16,7 @@ extension UITableViewCell {
     }
     
     /// An object that manages drag-and-drop reordering of table view cells.
-    public var showsCustomReorderControl: Bool {
+    open var showsCustomReorderControl: Bool {
         set {
             if newValue != showsCustomReorderControl {
                 objc_setAssociatedObject(self, &AssociatedKeys.showsCustomReorderControl, NSNumber(value: newValue), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
@@ -31,7 +31,6 @@ extension UITableViewCell {
                         handlesView.trailingAnchor.constraint(equalTo: trailingAnchor),
                         handlesView.topAnchor.constraint(equalTo: topAnchor),
                         handlesView.bottomAnchor.constraint(equalTo: bottomAnchor),
-//                        contentView.trailingAnchor.constraint(equalTo: handlesView.leadingAnchor)
                     ])
                     
                     reorderHandlesView = handlesView
