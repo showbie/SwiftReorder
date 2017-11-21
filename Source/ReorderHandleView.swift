@@ -20,11 +20,11 @@ public class ReorderHandleView: UIView {
             return reorderHandleImageView.image
         }
     }
-
+    
     init() {
         super.init(frame: .zero)
         
-        reorderHandleImageView.contentMode = .left
+        reorderHandleImageView.contentMode = .center
         addSubview(reorderHandleImageView)
     }
     
