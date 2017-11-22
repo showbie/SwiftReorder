@@ -31,20 +31,22 @@ private func mapValue(_ value: CGFloat, inRangeWithMin minA: CGFloat, max maxA: 
 }
 
 extension ReorderController {
-    
+
     func autoScrollVelocity() -> CGFloat {
         guard let tableView = tableView, let snapshotView = snapshotView else { return 0 }
-        
-        var actualContentInset = tableView.contentInset
+
+        guard autoScrollEnabled else { return 0 }
+
+        let safeAreaFrame: CGRect
         if #available(iOS 11, *) {
-            actualContentInset.top += tableView.safeAreaInsets.top
-            actualContentInset.bottom += tableView.safeAreaInsets.bottom
+            safeAreaFrame = UIEdgeInsetsInsetRect(tableView.frame, tableView.safeAreaInsets)
+        } else {
+            safeAreaFrame = UIEdgeInsetsInsetRect(tableView.frame, tableView.scrollIndicatorInsets)
         }
-        
-        let scrollBounds = UIEdgeInsetsInsetRect(tableView.bounds, actualContentInset)
-        let distanceToTop = max(snapshotView.frame.minY - scrollBounds.minY, 0)
-        let distanceToBottom = max(scrollBounds.maxY - snapshotView.frame.maxY, 0)
-        
+
+        let distanceToTop = max(snapshotView.frame.minY - safeAreaFrame.minY, 0)
+        let distanceToBottom = max(safeAreaFrame.maxY - snapshotView.frame.maxY, 0)
+
         if distanceToTop < autoScrollThreshold {
             return mapValue(distanceToTop, inRangeWithMin: autoScrollThreshold, max: 0, toRangeWithMin: -autoScrollMinVelocity, max: -autoScrollMaxVelocity)
         }
@@ -53,49 +55,50 @@ extension ReorderController {
         }
         return 0
     }
-    
+
     func activateAutoScrollDisplayLink() {
         autoScrollDisplayLink = CADisplayLink(target: self, selector: #selector(handleDisplayLinkUpdate))
         autoScrollDisplayLink?.add(to: RunLoop.main, forMode: RunLoopMode.defaultRunLoopMode)
         lastAutoScrollTimeStamp = nil
     }
-    
+
     func clearAutoScrollDisplayLink() {
         autoScrollDisplayLink?.invalidate()
         autoScrollDisplayLink = nil
         lastAutoScrollTimeStamp = nil
     }
-    
+
     @objc func handleDisplayLinkUpdate(_ displayLink: CADisplayLink) {
-        guard let tableView = tableView, let snapshotView = snapshotView else { return }
-        
+        guard let tableView = tableView else { return }
+
         if let lastAutoScrollTimeStamp = lastAutoScrollTimeStamp {
             let scrollVelocity = autoScrollVelocity()
-            
+
             if scrollVelocity != 0 {
                 let elapsedTime = displayLink.timestamp - lastAutoScrollTimeStamp
                 let scrollDelta = CGFloat(elapsedTime) * scrollVelocity
-                
-                let oldOffset = tableView.contentOffset
-                tableView.setContentOffset(CGPoint(x: oldOffset.x, y: oldOffset.y + CGFloat(scrollDelta)), animated: false)
-                
-                var actualContentInset = tableView.contentInset
+
+                let contentOffset = tableView.contentOffset
+                tableView.contentOffset = CGPoint(x: contentOffset.x, y: contentOffset.y + CGFloat(scrollDelta))
+
+                let contentInset: UIEdgeInsets
                 if #available(iOS 11, *) {
-                    actualContentInset.top += tableView.safeAreaInsets.top
-                    actualContentInset.bottom += tableView.safeAreaInsets.bottom
+                    contentInset = tableView.adjustedContentInset
+                } else {
+                    contentInset = tableView.contentInset
                 }
-                
-                tableView.contentOffset.y = min(tableView.contentOffset.y, tableView.contentSize.height + actualContentInset.bottom - tableView.frame.height)
-                tableView.contentOffset.y = max(tableView.contentOffset.y, -actualContentInset.top)
-                
-                let actualScrollDistance = tableView.contentOffset.y - oldOffset.y
-                snapshotView.frame.origin.y += actualScrollDistance
-                
+
+                let minContentOffset = -contentInset.top
+                let maxContentOffset = tableView.contentSize.height - tableView.bounds.height + contentInset.bottom
+
+                tableView.contentOffset.y = min(tableView.contentOffset.y, maxContentOffset)
+                tableView.contentOffset.y = max(tableView.contentOffset.y, minContentOffset)
+
+                updateSnapshotViewPosition()
                 updateDestinationRow()
             }
         }
         lastAutoScrollTimeStamp = displayLink.timestamp
     }
-    
-}
 
+}

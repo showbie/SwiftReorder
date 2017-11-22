@@ -23,82 +23,100 @@
 import UIKit
 
 extension CGRect {
-    
+
     init(center: CGPoint, size: CGSize) {
         self.init(x: center.x - (size.width / 2), y: center.y - (size.height / 2), width: size.width, height: size.height)
     }
-    
+
 }
 
 extension ReorderController {
-    
-    internal func updateDestinationRow() {
-        guard case let .reordering(sourceRow, destinationRow, snapshotOffset, _) = reorderState else { return }
-        guard let tableView = tableView else { return }
-        
-        guard let newDestinationRow = newDestinationRow() , newDestinationRow != destinationRow else { return }
-        
-        reorderState = .reordering(
-            sourceRow: sourceRow,
-            destinationRow: newDestinationRow,
-            snapshotOffset: snapshotOffset,
-            direction: destinationRow.row < newDestinationRow.row ? .down : .up
-        )
-        
+
+    func updateDestinationRow() {
+        guard case .reordering(let context) = reorderState,
+            let tableView = tableView,
+            let newDestinationRow = newDestinationRow(),
+            newDestinationRow != context.destinationRow
+        else { return }
+
+        var newContext = context
+        newContext.destinationRow = newDestinationRow
+        newContext.direction = destinationRow.row < newDestinationRow.row ? .down : .up
+        reorderState = .reordering(context: newContext)
+
         delegate?.tableView(tableView, reorderRowAt: destinationRow, to: newDestinationRow)
-        
+
         CATransaction.begin()
         CATransaction.setCompletionBlock {
             self.delegate?.tableView(tableView, didReorderRowAt: destinationRow, to: newDestinationRow)
         }
-        
-        tableView.moveRow(at: destinationRow, to: newDestinationRow)
-//        tableView.beginUpdates()
-//        tableView.deleteRows(at: [destinationRow], with: .fade)
-//        tableView.insertRows(at: [newDestinationRow], with: .fade)
-//        tableView.endUpdates()
-    
+
+        tableView.beginUpdates()
+        tableView.deleteRows(at: [destinationRow], with: .fade)
+        tableView.insertRows(at: [newDestinationRow], with: .fade)
+        tableView.endUpdates()
+
         CATransaction.commit()
     }
-    
-    internal func newDestinationRow() -> IndexPath? {
-        guard case let .reordering(_, destinationRow, _, _) = reorderState else { return nil }
-        guard let tableView = tableView, let snapshotView = snapshotView else { return nil }
-        
-        let snapshotFrame = CGRect(center: snapshotView.center, size: snapshotView.bounds.size)
-        
-        let rowSnapDistances = tableView.indexPathsForVisibleRows?.map { path -> (path: IndexPath, distance: CGFloat) in
-            let rect = tableView.rectForRow(at: path)
-            
-            if destinationRow.compare(path) == .orderedAscending {
-                return (path, abs(snapshotFrame.maxY - rect.maxY))
+
+    func newDestinationRow() -> IndexPath? {
+        guard case .reordering(let context) = reorderState,
+            let tableView = tableView,
+            let superview = tableView.superview,
+            let delegate = delegate,
+            let snapshotView = snapshotView
+        else { return nil }
+
+        let snapshotFrameInSuperview = CGRect(center: snapshotView.center, size: snapshotView.bounds.size)
+        let snapshotFrame = superview.convert(snapshotFrameInSuperview, to: tableView)
+
+        let visibleCells = tableView.visibleCells.filter {
+            // Workaround for an iOS 11 bug.
+
+            // When adding a row using UITableView.insertRows(...), if the new
+            // row's frame will be partially or fully outside the table view's
+            // bounds, and the new row is not the first row in the table view,
+            // it's inserted without animation.
+
+            let cellOverlapsTopBounds = $0.frame.minY < tableView.bounds.minY + 5
+            let cellIsFirstCell = tableView.indexPath(for: $0) == IndexPath(row: 0, section: 0)
+
+            return !cellOverlapsTopBounds || cellIsFirstCell
+        }
+
+        let rowSnapDistances = visibleCells.map { cell -> (path: IndexPath, distance: CGFloat) in
+            let path = tableView.indexPath(for: cell) ?? IndexPath(row: 0, section: 0)
+
+            if context.destinationRow.compare(path) == .orderedAscending {
+                return (path, abs(snapshotFrame.maxY - cell.frame.maxY))
             } else {
-                return (path, abs(snapshotFrame.minY - rect.minY))
+                return (path, abs(snapshotFrame.minY - cell.frame.minY))
             }
-        } ?? []
-        
-        let sectionSnapDistances = (0..<tableView.numberOfSections).flatMap { section -> (path: IndexPath, distance: CGFloat)? in
+        }
+
+        let sectionIndexes = 0..<tableView.numberOfSections
+        let sectionSnapDistances = sectionIndexes.flatMap { section -> (path: IndexPath, distance: CGFloat)? in
             let rowsInSection = tableView.numberOfRows(inSection: section)
-            
-            if section > destinationRow.section {
+
+            if section > context.destinationRow.section {
                 let rect: CGRect
                 if rowsInSection == 0 {
                     rect = rectForEmptySection(section)
                 } else {
                     rect = tableView.rectForRow(at: IndexPath(row: 0, section: section))
                 }
-                
+
                 let path = IndexPath(row: 0, section: section)
                 return (path, abs(snapshotFrame.maxY - rect.minY))
             }
-            else if section < destinationRow.section {
+            else if section < context.destinationRow.section {
                 let rect: CGRect
                 if rowsInSection == 0 {
                     rect = rectForEmptySection(section)
                 } else {
                     rect = tableView.rectForRow(at: IndexPath(row: rowsInSection - 1, section: section))
                 }
-                
+
                 let path = IndexPath(row: rowsInSection, section: section)
                 return (path, abs(snapshotFrame.minY - rect.maxY))
             }
@@ -106,16 +124,17 @@ extension ReorderController {
                 return nil
             }
         }
-        
-        let snapDistances = (rowSnapDistances + sectionSnapDistances).filter { delegate?.tableView(tableView, canReorderRowAt: $0.path) != false }
-        return snapDistances.min(by: { $0.distance < $1.distance })?.path
+
+        let snapDistances = rowSnapDistances + sectionSnapDistances
+        let availableSnapDistances = snapDistances.filter { delegate.tableView(tableView, canReorderRowAt: $0.path) != false }
+        return availableSnapDistances.min(by: { $0.distance < $1.distance })?.path
     }
-    
-    internal func rectForEmptySection(_ section: Int) -> CGRect {
+
+    func rectForEmptySection(_ section: Int) -> CGRect {
         guard let tableView = tableView else { return .zero }
-        
+
         let sectionRect = tableView.rectForHeader(inSection: section)
         return UIEdgeInsetsInsetRect(sectionRect, UIEdgeInsets(top: sectionRect.height, left: 0, bottom: 0, right: 0))
     }
-    
+
 }

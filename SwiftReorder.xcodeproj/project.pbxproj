@@ -93,8 +93,7 @@
 				E879CB151EA6B34400832428 /* CustomTableViewCell.swift */,
 				E854D7771EB8E29A00ABF0F1 /* Media.xcassets */,
 			);
-			name = Example;
-			path = SwiftReorder;
+			path = Example;
 			sourceTree = "<group>";
 		};
 		660256A81CE6A72F0029CB5F /* Source */ = {
