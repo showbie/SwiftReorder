@@ -40,20 +40,20 @@ extension ReorderController {
         else { return }
 
         var newContext = context
+        newContext.direction = context.destinationRow.row < newDestinationRow.row ? .down : .up
         newContext.destinationRow = newDestinationRow
-        newContext.direction = destinationRow.row < newDestinationRow.row ? .down : .up
         reorderState = .reordering(context: newContext)
 
-        delegate?.tableView(tableView, reorderRowAt: destinationRow, to: newDestinationRow)
+        delegate?.tableView(tableView, reorderRowAt: context.destinationRow, to: newContext.destinationRow)
 
         CATransaction.begin()
         CATransaction.setCompletionBlock {
-            self.delegate?.tableView(tableView, didReorderRowAt: destinationRow, to: newDestinationRow)
+            self.delegate?.tableView(tableView, didReorderRowAt: context.destinationRow, to: newContext.destinationRow)
         }
 
         tableView.beginUpdates()
-        tableView.deleteRows(at: [destinationRow], with: .fade)
-        tableView.insertRows(at: [newDestinationRow], with: .fade)
+        tableView.deleteRows(at: [context.destinationRow], with: .fade)
+        tableView.insertRows(at: [newContext.destinationRow], with: .fade)
         tableView.endUpdates()
 
         CATransaction.commit()

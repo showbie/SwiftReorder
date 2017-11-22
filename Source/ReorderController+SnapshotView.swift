@@ -55,7 +55,7 @@ extension ReorderController {
         view.layer.shadowRadius = shadowRadius
         view.layer.shadowOffset = shadowOffset
 
-        delegate?.tableView(tableView, willDisplay: snapshotView)
+        delegate?.tableView(tableView, willDisplay: view)
 
         superview.addSubview(view)
         snapshotView = view

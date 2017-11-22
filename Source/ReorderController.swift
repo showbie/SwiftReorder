@@ -192,7 +192,8 @@ public class ReorderController: NSObject {
         didSet {
             reorderGestureRecognizer.isEnabled = isReorderingEnabled
         }
-
+    }
+    
     /// Whether or not autoscrolling is enabled
     public var autoScrollEnabled = true
 
@@ -224,15 +225,15 @@ public class ReorderController: NSObject {
 
     // MARK: - Internal state
 
-    struct ReorderContext {
-        var sourceRow: IndexPath
-        var destinationRow: IndexPath
-        var snapshotOffset: CGFloat
-        var touchPosition: CGPoint
-        var direction: ReorderDirection
+    public struct ReorderContext {
+        public var sourceRow: IndexPath
+        public var destinationRow: IndexPath
+        public var snapshotOffset: CGFloat
+        public var touchPosition: CGPoint
+        public var direction: ReorderDirection
     }
 
-    enum ReorderState {
+    public enum ReorderState {
         case ready(snapshotRow: IndexPath?)
         case preparing(sourceRow: IndexPath)
         case reordering(context: ReorderContext)
@@ -246,7 +247,7 @@ public class ReorderController: NSObject {
 
     weak var tableView: UITableView?
 
-    public var reorderState: ReorderState = .ready(snapshotRow: nil)
+    public internal(set) var reorderState: ReorderState = .ready(snapshotRow: nil)
     var snapshotView: UIView? = nil
 
     var autoScrollDisplayLink: CADisplayLink?
@@ -287,7 +288,7 @@ public class ReorderController: NSObject {
 
         reorderState = .preparing(sourceRow: sourceRow)
 
-        delegate?.tableViewWillBeginReordering(tableView)
+        delegate.tableViewWillBeginReordering(tableView)
 
         createSnapshotViewForCell(at: sourceRow)
         animateSnapshotViewIn()
@@ -301,7 +302,7 @@ public class ReorderController: NSObject {
             sourceRow: sourceRow,
             destinationRow: sourceRow,
             snapshotOffset: snapshotOffset,
-            touchPosition: touchPosition
+            touchPosition: touchPosition,
             direction: .stationary
         )
         reorderState = .reordering(context: context)
