@@ -40,6 +40,13 @@ extension UITableViewCell {
                     reorderHandlesView = nil
                 }
             }
+            
+            if newValue {
+                NotificationCenter.default.addObserver(self, selector: #selector(reorderEnabledStateDidChange(_:)), name: ReorderController.ReorderingEnabledStateChangedNotification, object: nil)
+            }
+            else {
+                NotificationCenter.default.removeObserver(self, name: ReorderController.ReorderingEnabledStateChangedNotification, object: nil)
+            }
         }
         
         get {
@@ -65,5 +72,26 @@ extension UITableViewCell {
         get {
             return reorderHandlesView?.reorderHandleImage
         }
+    }
+    
+    public func setReorderHandleViewEnabled(_ isEnabled: Bool, animated: Bool = true) {
+        let animations = {
+            self.reorderHandlesView?.isUserInteractionEnabled = isEnabled
+            self.reorderHandlesView?.alpha = isEnabled ? 1 : 0.33
+        }
+        
+        if animated {
+            UIView.animate(withDuration: 0.25, delay: 0, animations: animations)
+        }
+        else {
+            animations()
+        }
+    }
+    
+    private func reorderEnabledStateDidChange(_ notification: Notification) {
+        guard let userInfo = notification.userInfo,
+            let isEnabled = userInfo[ReorderController.ReorderingEnabledStateKey] as? Bool else { return }
+        
+        setReorderHandleViewEnabled(isEnabled)
     }
 }

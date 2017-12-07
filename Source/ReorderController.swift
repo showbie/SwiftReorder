@@ -39,6 +39,9 @@ public enum ReorderSpacerCellStyle {
 public extension ReorderController {
     public static let DidBeginReorderingNotification = NSNotification.Name("ReorderControllerDidBeginReordering")
     public static let DidFinishReorderingNotification = NSNotification.Name("ReorderControllerDidFinishReordering")
+    public static let ReorderingEnabledStateChangedNotification = NSNotification.Name("ReorderingEnabledStateChangedNotification")
+    
+    public static let ReorderingEnabledStateKey = "ReorderingEnabledStateKey"
 }
 
 // MARK: - TableViewReorderDelegate
@@ -191,6 +194,10 @@ public class ReorderController: NSObject {
     public var isReorderingEnabled = true {
         didSet {
             reorderGestureRecognizer.isEnabled = isReorderingEnabled
+            
+            NotificationCenter.default.post(name: ReorderController.ReorderingEnabledStateChangedNotification,
+                                            object: self,
+                                            userInfo: [ReorderController.ReorderingEnabledStateKey: isReorderingEnabled])
         }
     }
     
@@ -307,8 +314,8 @@ public class ReorderController: NSObject {
         )
         reorderState = .reordering(context: context)
 
-        NotificationCenter.default.post(name: ReorderController.DidBeginReorderingNotification, object: tableView)
         delegate.tableViewDidBeginReordering(tableView)
+        NotificationCenter.default.post(name: ReorderController.DidBeginReorderingNotification, object: tableView)
     }
 
     func updateReorder(touchPosition: CGPoint) {
