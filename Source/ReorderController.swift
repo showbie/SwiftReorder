@@ -37,10 +37,17 @@ public enum ReorderSpacerCellStyle {
 
 @objc
 public extension ReorderController {
+    /// Notification posted when a reordering operation begins
     public static let DidBeginReorderingNotification = NSNotification.Name("ReorderControllerDidBeginReordering")
+    /// Notification posted when the reorder operation finishes, but the snapshot has not finished animating into place
     public static let DidFinishReorderingNotification = NSNotification.Name("ReorderControllerDidFinishReordering")
+    /// Notification posted once the entire oreorder operation has finalized and the table view is back in a neutral state
+    public static let DidFinalizeReorderingNotification = NSNotification.Name("DidFinalizeReorderingNotificationz")
+    /// Notification posted when the reordering enabled state changes
     public static let ReorderingEnabledStateChangedNotification = NSNotification.Name("ReorderingEnabledStateChangedNotification")
     
+    /// The ReorderingEnabledStateChangedNotification notification will be posted with this value in the userInfo dictionary.
+    /// The value associated with this key is true/false.
     public static let ReorderingEnabledStateKey = "ReorderingEnabledStateKey"
 }
 
@@ -360,6 +367,8 @@ public class ReorderController: NSObject {
                         tableView.reloadRows(at: [row], with: .none)
                     }
                     self.removeSnapshotView()
+                    
+                    NotificationCenter.default.post(name: ReorderController.DidFinalizeReorderingNotification, object: tableView)
                 }
             }
         )
