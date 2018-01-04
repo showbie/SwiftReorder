@@ -29,8 +29,16 @@ extension ReorderController {
         guard let tableView = tableView, let superview = tableView.superview else { return }
 
         removeSnapshotView()
+        
+        // preserve the content offset and restore after the table view has reloaded.
+        // In cases where reloading the data would produce an offset during the preparing phase different than the
+        // offset when not reordering, the content offset changes based on the difference between the preparing
+        // cell's normal height and it's height while being prepared for the snapshot. If this is the case,
+        // reset the contentOffset right after calling reloadData() so the table view won't move.
+        let contentOffset = tableView.contentOffset
         tableView.reloadData()
-
+        tableView.contentOffset = contentOffset
+        
         guard let cell = tableView.cellForRow(at: indexPath) else { return }
         delegate?.tableView(tableView, prepareForSnapshot: cell)
 
