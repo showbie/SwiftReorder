@@ -85,7 +85,6 @@ extension BasicReorderHandleViewController {
             return spacer
         }
         
-        var sourceIndexPath: IndexPath?
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! CustomTableViewCell
 
 //        if case let .preparing(sourceRow) = tableView.reorder.reorderState {
@@ -165,50 +164,50 @@ extension BasicReorderHandleViewController {
         }
         
         switch tableView.reorder.reorderState {
-        case let .reordering(_, destinationIndexPath, _, direction) where direction != .stationary && destinationIndexPath == indexPath:
+        case let .reordering(context) where context.direction != .stationary && context.destinationRow == indexPath:
             // determine the new spacer row height
             postReorderAffectedCellHeights = 0
             
-            if direction == .down {
+            if context.direction == .down {
                 // cell before the previous spacer
-                if destinationIndexPath.row - 2 >= 0 {
-                    if let cellHeight = tableView.delegate?.tableView!(tableView, heightForRowAt: IndexPath(row: destinationIndexPath.row - 2, section: 0)) {
+                if context.destinationRow.row - 2 >= 0 {
+                    if let cellHeight = tableView.delegate?.tableView!(tableView, heightForRowAt: IndexPath(row: context.destinationRow.row - 2, section: 0)) {
                         postReorderAffectedCellHeights += cellHeight
                     }
                 }
 
                 // cell after the previous spacer
-                if destinationIndexPath.row - 1 >= 0 {
-                    if let cellHeight = tableView.delegate?.tableView!(tableView, heightForRowAt: IndexPath(row: destinationIndexPath.row - 1, section: 0)) {
+                if context.destinationRow.row - 1 >= 0 {
+                    if let cellHeight = tableView.delegate?.tableView!(tableView, heightForRowAt: IndexPath(row: context.destinationRow.row - 1, section: 0)) {
                         postReorderAffectedCellHeights += cellHeight
                     }
                 }
                 
                 // cell after the new spacer
-                if destinationIndexPath.row + 1 < items.count - 1 {
-                    if let cellHeight = tableView.delegate?.tableView!(tableView, heightForRowAt: IndexPath(row: destinationIndexPath.row + 1, section: 0)) {
+                if context.destinationRow.row + 1 < items.count - 1 {
+                    if let cellHeight = tableView.delegate?.tableView!(tableView, heightForRowAt: IndexPath(row: context.destinationRow.row + 1, section: 0)) {
                         postReorderAffectedCellHeights += cellHeight
                     }
                 }
             }
             else {
                 // cell after the current spacer
-                if destinationIndexPath.row + 2 <= items.count - 1 {
-                    if let cellHeight = tableView.delegate?.tableView!(tableView, heightForRowAt: IndexPath(row: destinationIndexPath.row + 2, section: 0)) {
+                if context.destinationRow.row + 2 <= items.count - 1 {
+                    if let cellHeight = tableView.delegate?.tableView!(tableView, heightForRowAt: IndexPath(row: context.destinationRow.row + 2, section: 0)) {
                         postReorderAffectedCellHeights += cellHeight
                     }
                 }
                 
                 // cell before the current spacer
-                if destinationIndexPath.row + 1 <= items.count - 1 {
-                    if let cellHeight = tableView.delegate?.tableView!(tableView, heightForRowAt: IndexPath(row: destinationIndexPath.row + 1, section: 0)) {
+                if context.destinationRow.row + 1 <= items.count - 1 {
+                    if let cellHeight = tableView.delegate?.tableView!(tableView, heightForRowAt: IndexPath(row: context.destinationRow.row + 1, section: 0)) {
                         postReorderAffectedCellHeights += cellHeight
                     }
                 }
                 
                 // cell before the new spacer
-                if destinationIndexPath.row - 1 >= 0 {
-                    if let cellHeight = tableView.delegate?.tableView!(tableView, heightForRowAt: IndexPath(row: destinationIndexPath.row - 1, section: 0)) {
+                if context.destinationRow.row - 1 >= 0 {
+                    if let cellHeight = tableView.delegate?.tableView!(tableView, heightForRowAt: IndexPath(row: context.destinationRow.row - 1, section: 0)) {
                         postReorderAffectedCellHeights += cellHeight
                     }
                 }
@@ -240,8 +239,8 @@ extension BasicReorderHandleViewController {
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if case let .reordering(_, destinationIndexPath, _, direction) = tableView.reorder.reorderState, destinationIndexPath == indexPath {
-            if direction == .stationary {
+        if case let .reordering(context) = tableView.reorder.reorderState, context.destinationRow == indexPath {
+            if context.direction == .stationary {
                 // height of the initial spacer before any reordering has occurred
                 cachedSpacerHeight = cell.frame.size.height
             }
@@ -277,54 +276,54 @@ extension BasicReorderHandleViewController: TableViewReorderDelegate {
     
     func tableView(_ tableView: UITableView, reorderRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         // calculate the cell heights of the current cells as they exist before doing any reordering has occurred
-        guard case let .reordering(_, destinationIndexPath, _, direction) = tableView.reorder.reorderState, direction != .stationary else { return }
+        guard case let .reordering(context) = tableView.reorder.reorderState, context.direction != .stationary else { return }
 
         useCachedSpacerHeight = false
         preReorderAffectedCellHeights = 0
 
-        if direction == .down {
+        if context.direction == .down {
             // cell before the current spacer
-            if destinationIndexPath.row - 2 >= 0 {
-                if let cell = tableView.cellForRow(at: IndexPath(row: destinationIndexPath.row - 2, section: 0)) {
+            if context.destinationRow.row - 2 >= 0 {
+                if let cell = tableView.cellForRow(at: IndexPath(row: context.destinationRow.row - 2, section: 0)) {
                     preReorderAffectedCellHeights += cell.frame.height
                 }
             }
             
             // cell after the current spacer
-            if let cell = tableView.cellForRow(at: IndexPath(row: destinationIndexPath.row, section: 0)) {
+            if let cell = tableView.cellForRow(at: IndexPath(row: context.destinationRow.row, section: 0)) {
                 preReorderAffectedCellHeights += cell.frame.height
             }
             
             // cell after the cell we're moving to
-            if destinationIndexPath.row + 1 <= items.count - 1 {
-                if let cell = tableView.cellForRow(at: IndexPath(row: destinationIndexPath.row + 1, section: 0)) {
+            if context.destinationRow.row + 1 <= items.count - 1 {
+                if let cell = tableView.cellForRow(at: IndexPath(row: context.destinationRow.row + 1, section: 0)) {
                     preReorderAffectedCellHeights += cell.frame.height
                 }
             }
         }
         else {
             // cell before where we're moving to
-            if destinationIndexPath.row - 1 >= 0 {
-                if let cell = tableView.cellForRow(at: IndexPath(row: destinationIndexPath.row - 1, section: 0)) {
+            if context.destinationRow.row - 1 >= 0 {
+                if let cell = tableView.cellForRow(at: IndexPath(row: context.destinationRow.row - 1, section: 0)) {
                     preReorderAffectedCellHeights += cell.frame.height
                 }
             }
             
             // cell before the current spacer
-            if let cell = tableView.cellForRow(at: IndexPath(row: destinationIndexPath.row, section: 0)) {
+            if let cell = tableView.cellForRow(at: IndexPath(row: context.destinationRow.row, section: 0)) {
                 preReorderAffectedCellHeights += cell.frame.height
             }
 
             // cell after the current spacer
-            if destinationIndexPath.row + 2 <= items.count - 1 {
-                if let cell = tableView.cellForRow(at: IndexPath(row: destinationIndexPath.row + 2, section: 0)) {
+            if context.destinationRow.row + 2 <= items.count - 1 {
+                if let cell = tableView.cellForRow(at: IndexPath(row: context.destinationRow.row + 2, section: 0)) {
                     preReorderAffectedCellHeights += cell.frame.height
                 }
             }
         }
 
         
-        print("reordering source: \(sourceIndexPath), item \(items[sourceIndexPath.row]) | destination: \(destinationIndexPath), item \(items[destinationIndexPath.row])")
+        print("reordering source: \(sourceIndexPath), item \(items[sourceIndexPath.row]) | destination: \(context.destinationRow), item \(items[context.destinationRow.row])")
 
         let item = items[sourceIndexPath.row]
         items.remove(at: sourceIndexPath.row)
@@ -334,7 +333,7 @@ extension BasicReorderHandleViewController: TableViewReorderDelegate {
         var nextIndexPath: IndexPath
         
         // the previous and next cells will change depending on if we're reordering up or down
-        if direction == .down {
+        if context.direction == .down {
             previousIndexPath = destinationIndexPath
             nextIndexPath = sourceIndexPath
         }
