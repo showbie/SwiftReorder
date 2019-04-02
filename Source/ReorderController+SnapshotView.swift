@@ -81,9 +81,9 @@ extension ReorderController {
 
         let safeAreaFrame: CGRect
         if #available(iOS 11, *) {
-            safeAreaFrame = UIEdgeInsetsInsetRect(tableView.frame, tableView.safeAreaInsets)
+            safeAreaFrame = tableView.frame.inset(by: tableView.safeAreaInsets)
         } else {
-            safeAreaFrame = UIEdgeInsetsInsetRect(tableView.frame, tableView.scrollIndicatorInsets)
+            safeAreaFrame = tableView.frame.inset(by: tableView.scrollIndicatorInsets)
         }
 
         newCenterY = min(newCenterY, safeAreaFrame.maxY)
@@ -109,7 +109,7 @@ extension ReorderController {
         transformAnimation.fromValue = 1
         transformAnimation.toValue = cellScale
         transformAnimation.duration = animationDuration
-        transformAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+        transformAnimation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
 
         snapshotView.layer.add(opacityAnimation, forKey: nil)
         snapshotView.layer.add(shadowAnimation, forKey: nil)
@@ -133,7 +133,7 @@ extension ReorderController {
         transformAnimation.fromValue = cellScale
         transformAnimation.toValue = 1
         transformAnimation.duration = animationDuration
-        transformAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+        transformAnimation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
 
         snapshotView.layer.add(opacityAnimation, forKey: nil)
         snapshotView.layer.add(shadowAnimation, forKey: nil)

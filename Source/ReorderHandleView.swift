@@ -33,7 +33,7 @@ public class ReorderHandleView: UIView {
     }
     
     public override var intrinsicContentSize: CGSize {
-        return CGSize(width: 46, height: UIViewNoIntrinsicMetric)
+        return CGSize(width: 46, height: UIView.noIntrinsicMetric)
     }
     
     public override func layoutSubviews() {

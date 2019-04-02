@@ -88,7 +88,7 @@ extension UITableViewCell {
         }
     }
     
-    private func reorderEnabledStateDidChange(_ notification: Notification) {
+    @objc private func reorderEnabledStateDidChange(_ notification: Notification) {
         guard let userInfo = notification.userInfo,
             let isEnabled = userInfo[ReorderController.ReorderingEnabledStateKey] as? Bool else { return }
         

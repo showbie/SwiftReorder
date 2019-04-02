@@ -38,6 +38,9 @@ extension ReorderController {
             
         case .ended, .cancelled, .failed, .possible:
             endReorder()
+
+        @unknown default:
+            print("An unknown gesture state was encountered. Nothing to see here for now.")
         }
     }
     
